@@ -21,7 +21,7 @@ class NewUserReg(BaseModel):
 def read_root():
     return {"Hello": "World"}
 
-@app.get("/user/")
+@app.get("/user/", summary="这是用户输入code和address之后的查询，如果查到了会返回json形式的用户的各种个人信息以及自己的content，如果没查到或者查询有问题会返回404，如果传参格式错误会返回400")
 def user_login(code: str, address: str):
     address = board.verify_address_and_convert(address)
     if not address:
@@ -30,11 +30,11 @@ def user_login(code: str, address: str):
         raise HTTPException(status_code=400, detail="code format error")
     res = board.get_user_msg(code = code, address = address)
     if res == None:
-        raise HTTPException(status_code=400, detail="db records > 1 or not found")
+        raise HTTPException(status_code=404, detail="db records > 1 or not found")
     return res
 
 
-@app.get("/content/")
+@app.get("/content/", summary="这是用户想进入comment之后的查询，如果查到了会返回所有映射的content的json，如果查询有问题会返回404，如果传参格式错误会返回400")
 def get_content(code: str, address: str):
     address = board.verify_address_and_convert(address)
     if not address:
@@ -43,11 +43,11 @@ def get_content(code: str, address: str):
         raise HTTPException(status_code=400, detail="code format error")
     res = board.get_user_content(code = code, address = address)
     if res == None:
-        raise HTTPException(status_code=400, detail="user code error")
+        raise HTTPException(status_code=404, detail="user code error")
     return res
 
 
-@app.post("/update/content/")
+@app.post("/update/content/", summary="用户更新content，如果传参格式错误会返回400")
 def update_content(code: str, address: str, content: str):
     address = board.verify_address_and_convert(address)
     if not address:
@@ -57,7 +57,7 @@ def update_content(code: str, address: str, content: str):
     board.update_content(code = code, address = address, content = content)
 
 
-@app.post("/update/region/")
+@app.post("/update/region/", summary="用户更新region，如果传参格式错误会返回400")
 def update_region(code: str, address: str, region: str):
     address = board.verify_address_and_convert(address)
     if not address:
@@ -67,7 +67,7 @@ def update_region(code: str, address: str, region: str):
     board.update_region(code = code, address = address, region = region)
 
 
-@app.post("/update/name/")
+@app.post("/update/name/", summary="用户更新name，如果传参格式错误会返回400")
 def update_name(code: str, address: str, name: str):
     address = board.verify_address_and_convert(address)
     if not address:
@@ -77,7 +77,7 @@ def update_name(code: str, address: str, name: str):
     board.update_name(code = code, address = address, name = name)
 
 
-@app.post("/update/avatar")
+@app.post("/update/avatar", summary="用户更新avatar，如果传参格式错误会返回400")
 def update_avatar(code: str, address: str, avatar: str):
     address = board.verify_address_and_convert(address)
     if not address:

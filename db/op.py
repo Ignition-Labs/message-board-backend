@@ -15,9 +15,7 @@ def query_msg_by_address_and_code(code: str, address: str):
             models.Msg.expire == False
         )
     ).first()
-    print("rrrrrrrrrrrrrrrrrrrrrr")
     if record:
-        print("ssssssssssssssssssssssssssssssss")
         models.session.query(models.Msg).filter(
             and_(
                 models.Msg.code == code,
