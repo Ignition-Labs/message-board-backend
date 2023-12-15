@@ -1,0 +1,48 @@
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, CHAR, Text, DateTime, Boolean
+from sqlalchemy.orm import sessionmaker, scoped_session
+from datetime import datetime as dt
+
+# 创建对象的基类
+Base = declarative_base()
+
+# 初始化数据库连接
+engine = create_engine('postgresql://postgres:zilinissleepin@db-erm.cvuqkbojnpvj.us-east-1.rds.amazonaws.com:5432/erm',
+                       echo=True,  # 程序运行时反馈执行过程中的关键对象，包括ORM构建的sql语句
+                       max_overflow=0,  # 超过连接池大小外最多创建的连接
+                       pool_size=5,  # 连接池大小
+                       pool_timeout=30,  # 池中没有线程最多等待的时间，否则报错
+                       pool_recycle=-1  # 多久之后对线程池中的线程进行一次连接的回收（重置）
+                       )
+
+# 绑定引擎
+Session = sessionmaker(bind=engine)
+# 创建数据库链接池，直接使用session即可为当前线程拿出一个链接对象conn
+# 内部会采用threading.local进行隔离
+session = scoped_session(Session)
+
+
+'''
+创建数据表的映射类
+'''
+class Msg(Base):
+    __tablename__ = 'msg'
+    code = Column(CHAR(6), nullable=False)
+    content = Column(Text, nullable=False)
+    create_time = Column(DateTime, default=dt.now(), nullable=False),
+    address = Column(CHAR(42), nullable=False),
+    region = Column(String(50))
+    name = Column(String(16))
+    avatar = Column(Text)
+    expire = Column(Boolean, default=False, nullable=False)
+    
+
+class mapping(Base):
+    __tablename__ = 'msg'
+    code = Column(CHAR(6), nullable=False)
+    link_code = Column(Text, nullable=False)
+
+
+# 创建表到数据库表中
+Base.metadata.create_all(engine)
