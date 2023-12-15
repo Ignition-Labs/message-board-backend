@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, CHAR, Text, DateTime, Boolean
+from sqlalchemy import Column, Integer, String, CHAR, Text, DateTime, Boolean, Index
 from sqlalchemy.orm import sessionmaker, scoped_session
 from datetime import datetime as dt
 
@@ -41,7 +41,11 @@ class Msg(Base):
 class mapping(Base):
     __tablename__ = 'msg'
     code = Column(CHAR(6), nullable=False)
-    link_code = Column(Text, nullable=False)
+    code_to_be_connected = Column(Text, nullable=False)
+    
+    __table_args__ = (
+        Index('mapping_code_idx', 'code'),
+    )
 
 
 # 创建表到数据库表中
