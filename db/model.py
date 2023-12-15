@@ -8,7 +8,7 @@ from datetime import datetime as dt
 Base = declarative_base()
 
 # 初始化数据库连接
-engine = create_engine('postgresql://postgres:zilinissleepin@db-erm.cvuqkbojnpvj.us-east-1.rds.amazonaws.com:5432/erm',
+engine = create_engine('postgresql://postgres:tmphavafun@erm.c3rrikbrfsu7.ap-southeast-1.rds.amazonaws.com:5432/erm',
                        echo=True,  # 程序运行时反馈执行过程中的关键对象，包括ORM构建的sql语句
                        max_overflow=0,  # 超过连接池大小外最多创建的连接
                        pool_size=5,  # 连接池大小
@@ -29,19 +29,19 @@ session = scoped_session(Session)
 class Msg(Base):
     __tablename__ = 'msg'
     code = Column(CHAR(6), nullable=False)
-    content = Column(Text, nullable=False)
+    content = Column(Text)
     create_time = Column(DateTime, default=dt.now(), nullable=False),
-    address = Column(CHAR(42), nullable=False),
+    address = Column(CHAR(42)),
     region = Column(String(50))
     name = Column(String(16))
     avatar = Column(Text)
-    expire = Column(Boolean, default=False, nullable=False)
+    expire = Column(Boolean, default=False)
     
 
-class mapping(Base):
+class Mapping(Base):
     __tablename__ = 'msg'
     code = Column(CHAR(6), nullable=False)
-    code_to_be_connected = Column(Text, nullable=False)
+    code_connected = Column(Text, nullable=False)
     
     __table_args__ = (
         Index('mapping_code_idx', 'code'),
