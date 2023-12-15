@@ -6,13 +6,46 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def verify_address_and_convert(address: str):
+    try:
+        address = Web3.to_checksum_address(address)
+        return address
+    except:
+        return None
 
 
+def verify_code(code: str):
+    if type(code) == str and len(code) == 6:
+        for char in code:
+            try:
+                int(char)
+            except:
+                return False
+        return True
+    else:
+        return False
 
 
+def get_user_msg(code: str, address: str):
+    return op.query_msg_by_address_and_code(code=code, address=address)
+
+def get_user_content(code: str, address: str):
+    return op.qeury_mappings_by_code(code=code, address=address)
+
+def update_content(code: str, address: str, content: str):
+    op.update_content(code, address, content)
 
 
+def update_region(code: str, address: str, region: str):
+    op.update_region(code, address, region)
 
+
+def update_name(code: str, address: str, name: str):
+    op.update_name(code, address, name)
+
+
+def update_avatar(code: str, address: str, avatar: str):
+    op.update_avatar(code, address, avatar)
 
 
 
