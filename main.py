@@ -47,7 +47,7 @@ def get_content(code: str, address: str):
     return res
 
 
-@app.post("/update/")
+@app.post("/update/content/")
 def update_content(code: str, address: str, content: str):
     address = board.verify_address_and_convert(address)
     if not address:
@@ -57,7 +57,7 @@ def update_content(code: str, address: str, content: str):
     board.update_content(code = code, address = address, content = content)
 
 
-@app.post("/update/")
+@app.post("/update/region/")
 def update_region(code: str, address: str, region: str):
     address = board.verify_address_and_convert(address)
     if not address:
@@ -67,7 +67,7 @@ def update_region(code: str, address: str, region: str):
     board.update_region(code = code, address = address, region = region)
 
 
-@app.post("/update/")
+@app.post("/update/name/")
 def update_name(code: str, address: str, name: str):
     address = board.verify_address_and_convert(address)
     if not address:
@@ -77,7 +77,7 @@ def update_name(code: str, address: str, name: str):
     board.update_name(code = code, address = address, name = name)
 
 
-@app.post("/update/")
+@app.post("/update/avatar")
 def update_avatar(code: str, address: str, avatar: str):
     address = board.verify_address_and_convert(address)
     if not address:
@@ -91,19 +91,19 @@ def update_avatar(code: str, address: str, avatar: str):
 
 # @app.get("/new_code/")
 # def get_new_code_and_reg():
-#     return code.gen_new_code()
+#     return board.gen_new_code()
 
 
 # @app.get("/many_code/")
 # def get_new_many_codes_and_reg(many: int):
-#     return code.gen_many_new_code(many)
+#     return board.gen_many_new_code(many)
 
 
 # @app.get("/connect_all/")
 # def connect_all():
-#     code.connect_all()
+#     board.connect_all()
 
 
 # @app.get("/judge/")
 # def judge():
-#     code.judge()
+#     board.judge()

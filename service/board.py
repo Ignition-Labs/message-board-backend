@@ -29,8 +29,10 @@ def verify_code(code: str):
 def get_user_msg(code: str, address: str):
     return op.query_msg_by_address_and_code(code=code, address=address)
 
+
 def get_user_content(code: str, address: str):
     return op.qeury_mappings_by_code(code=code, address=address)
+
 
 def update_content(code: str, address: str, content: str):
     op.update_content(code, address, content)

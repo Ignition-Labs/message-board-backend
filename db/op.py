@@ -10,21 +10,21 @@ logger = logging.getLogger(__name__)
 def query_msg_by_address_and_code(code: str, address: str):
     record = models.session.query(models.Msg).filter(
         and_(
-            models.Mapping.code == code,
+            models.Msg.code == code,
             models.Msg.address == None,
             models.Msg.expire == False
         )
     ).first()
+    print("rrrrrrrrrrrrrrrrrrrrrr")
     if record:
-        models.session.query(models.Msg)\
-        .filter_by(
+        print("ssssssssssssssssssssssssssssssss")
+        models.session.query(models.Msg).filter(
             and_(
                 models.Msg.code == code,
                 models.Msg.address == None,
                 models.Msg.expire == False
             )
-        )\
-        .update(
+        ).update(
             {
                 "address": address,
             },
@@ -46,7 +46,7 @@ def query_msg_by_address_and_code(code: str, address: str):
     if len(result) > 1:
         logger.error(f"db query error: {result}")
     elif len(result) != 0:
-        msg = {'name': result[0].name, 'avatar': result[0].avatar, 'content': result[0].content, 'region': result[0].region, "link": []}
+        msg = {'name': result[0].name, 'avatar': result[0].avatar, 'content': result[0].content, 'region': result[0].region}
         
     models.session.close()
     return msg
@@ -147,7 +147,7 @@ def update_address(code: str, address: str):
 
 def update_content(code: str, address: str, content: str = None):
     models.session.query(models.Msg)\
-        .filter_by(
+        .filter(
             and_(
                 models.Msg.code == code,
                 models.Msg.address == address,
@@ -166,7 +166,7 @@ def update_content(code: str, address: str, content: str = None):
 
 def update_region(code: str, address: str, region: str = None):
     models.session.query(models.Msg)\
-        .filter_by(
+        .filter(
             and_(
                 models.Msg.code == code,
                 models.Msg.address == address,
@@ -185,7 +185,7 @@ def update_region(code: str, address: str, region: str = None):
 
 def update_name(code: str, address: str, name: str = None):
     models.session.query(models.Msg)\
-        .filter_by(
+        .filter(
             and_(
                 models.Msg.code == code,
                 models.Msg.address == address,
@@ -202,9 +202,9 @@ def update_name(code: str, address: str, name: str = None):
     models.session.close()
 
 
-def update_content(code: str, address: str, avatar: str = None):
+def update_avatar(code: str, address: str, avatar: str = None):
     models.session.query(models.Msg)\
-        .filter_by(
+        .filter(
             and_(
                 models.Msg.code == code,
                 models.Msg.address == address,

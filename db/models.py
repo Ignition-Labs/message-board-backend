@@ -31,9 +31,9 @@ class Msg(Base):
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     code = Column(CHAR(6), nullable=False)
+    address = Column(CHAR(42))
     content = Column(Text)
-    create_time = Column(DateTime, default=dt.now(), nullable=False),
-    address = Column(CHAR(42)),
+    create_time = Column(DateTime, default=dt.now(), nullable=False)
     region = Column(String(50))
     name = Column(String(16))
     avatar = Column(Text)
