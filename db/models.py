@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, CHAR, Text, DateTime, Boolean, Index
+from sqlalchemy import Column, Integer, String, CHAR, Text, DateTime, Boolean, Index, PrimaryKeyConstraint
 from sqlalchemy.orm import sessionmaker, scoped_session
 from datetime import datetime as dt
 
@@ -8,7 +8,7 @@ from datetime import datetime as dt
 Base = declarative_base()
 
 # 初始化数据库连接
-engine = create_engine('postgresql://postgres:tmphavafun@erm.c3rrikbrfsu7.ap-southeast-1.rds.amazonaws.com:5432/erm',
+engine = create_engine('postgresql://postgres:tmphavefun@erm.c3rrikbrfsu7.ap-southeast-1.rds.amazonaws.com:5432/erm',
                        echo=True,  # 程序运行时反馈执行过程中的关键对象，包括ORM构建的sql语句
                        max_overflow=0,  # 超过连接池大小外最多创建的连接
                        pool_size=5,  # 连接池大小
@@ -28,6 +28,8 @@ session = scoped_session(Session)
 '''
 class Msg(Base):
     __tablename__ = 'msg'
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
     code = Column(CHAR(6), nullable=False)
     content = Column(Text)
     create_time = Column(DateTime, default=dt.now(), nullable=False),
@@ -39,7 +41,8 @@ class Msg(Base):
     
 
 class Mapping(Base):
-    __tablename__ = 'msg'
+    __tablename__ = 'mapping'
+    id = Column(Integer, primary_key=True, autoincrement=True)
     code = Column(CHAR(6), nullable=False)
     code_connected = Column(Text, nullable=False)
     

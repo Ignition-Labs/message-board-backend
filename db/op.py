@@ -1,5 +1,5 @@
 from db import models
-from sqlalchemy import and_
+from sqlalchemy import and_, func
 import logging
 import random
 from typing import List
@@ -24,7 +24,8 @@ def query_by_address(address: str):
         msg = result[0]
 
     models.session.close()
-    return msg
+    print(msg.code)
+    return msg.code
 
 
 def add_msg(code: str, address: str = None, region: str = None, name: str = None, avatar: str = None):
@@ -38,6 +39,20 @@ def add_msg(code: str, address: str = None, region: str = None, name: str = None
     models.session.add(inst)
     models.session.commit()
     models.session.close()
+
+
+def random_choose_mapping(code: str):
+    results = models.session.query(models.Msg).filter(models.Msg.code != code).order_by(func.random()).limit(5).all()
+    models.session.close()
+    codes = [res.code for res in results]
+    print(f"results: {codes}")
+    return codes
+
+
+def all_codes():
+    results = models.session.query(models.Msg.code).all()
+    models.session.close()
+    return [res.code for res in results]
 
 
 def add_many_random_mapping(code: str, codes_connected: List[str]):
@@ -54,7 +69,7 @@ def add_many_random_mapping(code: str, codes_connected: List[str]):
 
 
 def qeury_mappings_by_code(code: str):
-    result = models.session.query(
+    results = models.session.query(
                 models.Mapping,
             ).filter(
                 and_(
@@ -63,7 +78,7 @@ def qeury_mappings_by_code(code: str):
             ).all()    
 
     models.session.close()
-    return result
+    return [res.code_connected for res in results]
 
 
 def update_profile(address: str, name: str = None, avatar: str = None):
