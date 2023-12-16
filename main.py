@@ -10,7 +10,7 @@ from starlette.middleware.cors import CORSMiddleware  #引入 CORS中间件模�
 logger = logging.getLogger(__name__)
 
 
-app = FastAPI(upload_max_size=200 * 1024 * 1024)
+app = FastAPI(upload_max_size=5 * 1024 * 1024)
 
 #设置允许访问的域名
 origins = ["*"]  #也可以设置为"*"，即为所有。
