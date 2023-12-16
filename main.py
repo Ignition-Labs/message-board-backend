@@ -1,13 +1,24 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import logging
-from service import board
-from web3 import Web3
+from service import board, s3
+from starlette.middleware.cors import CORSMiddleware  #引入 CORS中间件模块
 
 logger = logging.getLogger(__name__)
 
 
 app = FastAPI()
+
+#设置允许访问的域名
+origins = ["*"]  #也可以设置为"*"，即为所有。
+
+#设置跨域传参
+app.add_middleware(
+    CORSMiddleware, 
+    allow_origins=origins,  #设置允许的origins来源
+    allow_credentials=True,
+    allow_methods=["*"],  # 设置允许跨域的http方法，比如 get、post、put等。
+    allow_headers=["*"])  #允许跨域的headers，可以用来鉴别来源等作用。
 
 
 class NewUserReg(BaseModel):
@@ -47,14 +58,29 @@ def get_content(code: str, address: str):
     return res
 
 
+# @app.post("/update/content/", summary="用户更新content，如果传参格式错误会返回400")
+# def update_content(code: str, address: str, content: str):
+#     address = board.verify_address_and_convert(address)
+#     if not address:
+#         raise HTTPException(status_code=400, detail="address format error")
+#     if not board.verify_code(code):
+#         raise HTTPException(status_code=400, detail="code format error")
+#     board.update_content(code = code, address = address, content = content)
+
+
+class Item(BaseModel):
+    code: str
+    address: str
+    content: str
+
 @app.post("/update/content/", summary="用户更新content，如果传参格式错误会返回400")
-def update_content(code: str, address: str, content: str):
-    address = board.verify_address_and_convert(address)
+def update_content(item: Item):
+    address = board.verify_address_and_convert(item.address)
     if not address:
         raise HTTPException(status_code=400, detail="address format error")
-    if not board.verify_code(code):
+    if not board.verify_code(item.code):
         raise HTTPException(status_code=400, detail="code format error")
-    board.update_content(code = code, address = address, content = content)
+    board.update_content(code = item.code, address = item.address, content = item.content)
 
 
 @app.post("/update/region/", summary="用户更新region，如果传参格式错误会返回400")
@@ -85,6 +111,28 @@ def update_avatar(code: str, address: str, avatar: str):
     if not board.verify_code(code):
         raise HTTPException(status_code=400, detail="code format error")
     board.update_avatar(code = code, address = address, avatar = avatar)
+
+
+class S3File(BaseModel):
+    file_name: str
+    file: bytes
+
+@app.post("/s3/upload", summary="如果传参格式错误会返回400")
+def upload_file(s3file: S3File):
+    status = s3.upload_file(s3file.file_name, s3file.file)
+    if not status:
+        raise HTTPException(status_code=400, detail="upload error")
+    else:
+        return HTTPException(status_code=200, detail=f"{status}")
+
+
+# @app.post("/s3/download", summary="如果传参格式错误会返回400")
+# def dowload_file(file_name: str):
+#     res = s3.get_file_url(file_name)
+#     if not res:
+#         raise HTTPException(status_code=400, detail="dowload error")
+#     else:
+#         return HTTPException(status_code=200, detail=f"{res}")
 
 
 ########################## ADMIN ##############################
