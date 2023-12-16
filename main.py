@@ -1,5 +1,8 @@
+from typing import Annotated
+from fastapi import File, UploadFile
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from starlette.responses import FileResponse
 import logging
 from service import board, s3
 from starlette.middleware.cors import CORSMiddleware  #引入 CORS中间件模块
@@ -7,7 +10,7 @@ from starlette.middleware.cors import CORSMiddleware  #引入 CORS中间件模�
 logger = logging.getLogger(__name__)
 
 
-app = FastAPI()
+app = FastAPI(upload_max_size=200 * 1024 * 1024)
 
 #设置允许访问的域名
 origins = ["*"]  #也可以设置为"*"，即为所有。
@@ -114,16 +117,15 @@ def update_avatar(code: str, address: str, avatar: str):
 
 
 class S3File(BaseModel):
-    file_name: str
     file: bytes
 
-@app.post("/s3/upload", summary="如果传参格式错误会返回400")
-def upload_file(s3file: S3File):
-    status = s3.upload_file(s3file.file_name, s3file.file)
-    if not status:
-        raise HTTPException(status_code=400, detail="upload error")
-    else:
-        return HTTPException(status_code=200, detail=f"{status}")
+# @app.post("/s3/upload", summary="如果传参格式错误会返回400")
+# def upload_file(file_name: str, s3file: S3File):
+#     status = s3.upload_file(file_name, s3file.file)
+#     if not status:
+#         raise HTTPException(status_code=400, detail="upload error")
+#     else:
+#         return HTTPException(status_code=200, detail=f"{status}")
 
 
 # @app.post("/s3/download", summary="如果传参格式错误会返回400")
@@ -133,6 +135,24 @@ def upload_file(s3file: S3File):
 #         raise HTTPException(status_code=400, detail="dowload error")
 #     else:
 #         return HTTPException(status_code=200, detail=f"{res}")
+
+
+@app.post("/uploadfile/")
+async def create_upload_file(file: UploadFile):
+    status = s3.upload_file(file.filename, await file.read())
+    if not status:
+        raise HTTPException(status_code=400, detail="upload error")
+    else:
+        return HTTPException(status_code=200, detail=f"https://nft-erm-bucket.s3.ap-southeast-1.amazonaws.com/{file.filename}")
+
+
+# @app.get("/.well-known/pki-validation/40C3079F6B4B01091FCCB906260C0C25.txt")
+# async def show():
+#     filename = "40C3079F6B4B01091FCCB906260C0C25.txt"
+#     return FileResponse(
+#             filename,
+#             filename=filename, # 这里的文件名是你要给用户展示的下载的文件名
+#         )
 
 
 ########################## ADMIN ##############################
